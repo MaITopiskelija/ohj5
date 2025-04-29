@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Kevään 2025 kuntavaalien varjovaalit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    canvas {
+      max-width: 100%;
+      height: auto !important;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Kevään 2025 Varjovaalit</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Valikko">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Luo käyttäjätunnus / Kirjaudu</a>
+          <ul class="dropdown-menu dropdown-menu-end p-4" style="min-width: 300px;">
+            <li><input id="login-username" class="form-control mb-2" type="text" placeholder="Käyttäjätunnus"></li>
+            <li><input id="login-password" class="form-control mb-2" type="password" placeholder="Salasana"></li>
+            <li><button id="login-button" class="btn btn-success w-100 mb-2">Kirjaudu</button></li>
+            <li><input id="registration-username" class="form-control mb-2" type="text" placeholder="Uusi käyttäjätunnus"></li>
+            <li><input id="registration-password" class="form-control mb-2" type="password" placeholder="Uusi salasana"></li>
+            <li class="text-center mb-2">
+              <input type="radio" name="role" value="Normal User" checked> Äänestäjä
+              <input type="radio" name="role" value="Moderator"> Ylläpitäjä
+            </li>
+            <li><button id="register-button" class="btn btn-primary w-100 mb-2">Rekisteröidy</button></li>
+            <li><button id="change-password-button" class="btn btn-warning w-100 mb-2">Muuta salasanaa</button></li>
+            <li><button id="logout-button" class="btn btn-danger w-100">Kirjaudu ulos</button></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Welcome Card -->
+<div id="welcome-card" class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card mb-3" style="width: 60%;">
+        <img src="varjo.png" class="card-img-top" alt="varjovaalit">
+        <div class="card-body">
+          <h5 class="card-title">Kevään 2025 suuri varjovaaliäänestys on täällä!</h5>
+          <p class="card-text">Nyt voit antaa äänesi kuulua - osallistu siis varjovaaliin. <br>Voit äänestää useampaa puoluetta mielesi mukaan.</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">1. Luo itsellesi käyttäjätunnus.</li>
+            <li class="list-group-item">2. Kirjaudu käyttäjätunnuksella varjovaaliin.</li>
+            <li class="list-group-item">3. Voit myös muokata äänestystä Ylläpitäjä -tunnuksilla.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Main Section -->
+<div class="container mt-4">
+  <div id="main-section" style="display: none;">
+    <h2 class="text-center">Mitä puoluetta äänestäisit?</h2>
+    <div id="poll-list" class="row g-3"></div>
+
+    <h3 class="mt-4">Äänestystulos</h3>
+    <div class="card p-3">
+      <canvas id="poll-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Moderator Section -->
+  <div id="moderator-section" style="display: none;">
+    <h3 class="mt-4">Ylläpitäjän osio:</h3>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Lisää puolue äänestykseen</h5>
+            <button id="open-create-poll-modal" class="btn btn-success w-100">Lisää puolue</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Poista puolue äänestyksestä</h5>
+            <button id="delete-poll" class="btn btn-danger w-100">Poista puolue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Creating New Poll -->
+<div class="modal fade" id="createPollModal" tabindex="-1" aria-labelledby="createPollModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createPollModalLabel">Lisää puolue äänestykseen</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sulje"></button>
+      </div>
+      <div class="modal-body">
+        <input id="new-poll-name" class="form-control mb-2" placeholder="Puolueen nimi">
+        <textarea id="new-poll-description" class="form-control" placeholder="Anna uudesta puolueesta tietoja."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="create-poll" class="btn btn-primary">Lisää puolue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Deleting Poll -->
+<div class="modal fade" id="deletePollModal" tabindex="-1" aria-labelledby="deletePollModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletePollModalLabel">Poista puolue</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sulje"></button>
+      </div>
+      <div class="modal-body">
+        <select id="poll-to-delete" class="form-control mb-3"></select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="confirm-delete-poll" class="btn btn-danger">Poista</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Main JavaScript -->
+<script src="main.js"></script>
+
+</body>
+</html>
